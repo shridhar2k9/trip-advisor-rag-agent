@@ -1,0 +1,10 @@
+langchain>=1.4
+langchain-core>=1.4
+langchain-groq>=1.1
+langchain-tavily>=0.2.18
+tavily-python>=0.7.12
+pydantic>=2.11
+python-dotenv>=1.1
+gradio
+transformers
+torch>=2.6
