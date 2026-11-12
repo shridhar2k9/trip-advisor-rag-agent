@@ -1,22 +1,24 @@
-import gradio as gr
-from transformers import AutoModelForCausalLM, AutoTokenizer
+import sys
+from pathlib import Path
 
-checkpoint = "HuggingFaceTB/SmolLM2-135M-Instruct"
-device = "cpu"  # "cuda" or "cpu"
-tokenizer = AutoTokenizer.from_pretrained(checkpoint)
-model = AutoModelForCausalLM.from_pretrained(checkpoint).to(device)
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+import gradio as gr
+
+from agents.travel_agent import create_travel_agent
 
 
 def predict(message, history):
-    messages = history + [{"role": "user", "content": message}]
-    input_text = tokenizer.apply_chat_template(messages, tokenize=False)
-    inputs = tokenizer.encode(input_text, return_tensors="pt").to(device)  
-    outputs = model.generate(inputs, max_new_tokens=100, temperature=0.2, top_p=0.9, do_sample=True)
-    decoded = tokenizer.decode(outputs[0])
-    response = decoded.split("<|im_start|>assistant\n")[-1].split("<|im_end|>")[0]
-    return response
+    messages = [
+        {"role": turn["role"], "content": [{"text": turn["content"]}]}
+        for turn in history
+        if turn["role"] in ("user", "assistant")
+    ]
+    agent = create_travel_agent(messages=messages)
+    return str(agent(message))
 
 
 demo = gr.ChatInterface(predict, api_name="chat")
 
-demo.launch()
+if __name__ == "__main__":
+    demo.launch()
