@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import os
+from typing import Any
 
 from dotenv import load_dotenv
 from strands import Agent
@@ -29,13 +30,16 @@ model = OpenAIModel(
 )
 
 
-def create_travel_agent(messages: list[Message] | None = None) -> Agent:
+def create_travel_agent(
+    messages: list[Message] | None = None,
+    tools: list[Any] | None = None,
+) -> Agent:
     return Agent(
         name="Travel Agent",
         model=model,
         description="Agent for providing travel information and recommendations",
         system_prompt=SYSTEM_PROMPT,
-        tools=TOOLS,
+        tools=TOOLS if tools is None else tools,
         messages=messages,
     )
 

@@ -39,3 +39,18 @@ includes the PDF filename and page number as source information. Its `k` argumen
 sets the maximum number of matching chunks (default `5`, capped by the collection
 size). To index another directory, pass `--pdf-dir "D:\path\to\pdfs"`; chunk sizes
 can be changed with `--chunk-size` and `--chunk-overlap`.
+
+## MCP travel agent
+
+The Gradio chat uses a local MCP server for travel-PDF search. The server exposes
+`search_travel_knowledge`, which delegates to the existing Chroma RAG retriever.
+The Strands MCP client starts that server over stdio for each chat turn, discovers
+its tools, and keeps the connection open while the agent responds. Other travel
+tools remain local Strands tools.
+
+The MCP SDK is declared directly in `requirements.txt` because the project uses
+its MCP v2 server API. Start the chat from the repository root with:
+
+```powershell
+.\.venv\Scripts\python.exe -m ui.gradio_ui
+```
